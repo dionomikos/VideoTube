@@ -150,7 +150,16 @@ class VideoProcessor {
     private function updateDuration($duration, $videoId) {
         $hours = floor($duration/3600);
         $mins = floor(($duration - ($hours * 3600)) / 60);
-        $secs = floor($duration % 60); 
+        $secs = floor($duration % 60);
+
+        if ($hours < 1) {
+            $hours = "";
+        }
+        else {
+            $hours = $hours . ":";
+        }
+
+        // You can also use the ternary operator: $hours = ($hours < 1) ? "" : $hours . ":";
     }
 }
 ?>
