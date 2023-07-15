@@ -140,7 +140,7 @@ class VideoProcessor {
         $videoId = $this->con->lastInsertId();
         $this->updateDuration($duration, $videoId);
 
-        echo "duration: $duration";
+        // echo "duration: $duration";
     }
 
     private function getVideoDuration($filePath) {
@@ -152,14 +152,27 @@ class VideoProcessor {
         $mins = floor(($duration - ($hours * 3600)) / 60);
         $secs = floor($duration % 60);
 
+        /*
+        One way to do it is with multi lines
         if ($hours < 1) {
             $hours = "";
         }
         else {
             $hours = $hours . ":";
         }
+        */
 
-        // You can also use the ternary operator: $hours = ($hours < 1) ? "" : $hours . ":";
+        $hours = ($hours < 1) ? "" : $hours . ":";
+        $mins = ($mins < 10) ? "0" . $mins . ":" : $mins . ":";
+        $secs = ($secs < 10) ? "0" . $secs : $secs;
+
+        $duration = $hours.$mins.$secs;
+
+        $query = $this->con->prepare("UPDATE videos SET duration=:duration WHERE id=:videoId");
+        // Bind duration and videoId placeholders to the right values stored in this variables
+        $query->bindParam(":duration", $duration);
+        $query->bindParam(":videoId", $videoId);
+        $query->execute();
     }
 }
 ?>
