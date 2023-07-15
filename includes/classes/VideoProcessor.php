@@ -148,6 +148,7 @@ class VideoProcessor {
     }
 
     private function updateDuration($duration, $videoId) {
+        $duration = (int)$duration;
         $hours = floor($duration/3600);
         $mins = floor(($duration - ($hours * 3600)) / 60);
         $secs = floor($duration % 60);
