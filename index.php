@@ -6,7 +6,7 @@
 // session_unset($_SESSION["userLoggedIn"]); This will unset only this variable
 
 if(isset($_SESSION["userLoggedIn"])) {
-    echo "user is logged in as " . $_SESSION["userLoggedIn"];
+    echo "user is logged in as " . $userLoggedInObj->getName();
 }
 else {
     echo "not logged in";
