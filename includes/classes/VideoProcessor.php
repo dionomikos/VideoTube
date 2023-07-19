@@ -53,6 +53,7 @@ class VideoProcessor {
                 echo "Upload failed - could not generate thumbnails\n";
                 return false;
             }
+
             return true;
 
         }
@@ -131,11 +132,12 @@ class VideoProcessor {
     }
 
     public function generateThumbnails($filePath) {
-        $thumbnailSize = "210x118";  // YOUTUBE'S THUMBNAIL SIZE
+
+        $thumbnailSize = "210x118";
         $numThumbnails = 3;
         $pathToThumbnail = "uploads/videos/thumbnails";
-
-        $duration = $this -> getVideoDuration($filePath);
+        
+        $duration = $this->getVideoDuration($filePath);
 
         $videoId = $this->con->lastInsertId();
         $this->updateDuration($duration, $videoId);
@@ -156,12 +158,14 @@ class VideoProcessor {
                     echo $line . "<br>";
                 }
             }
-            $selected = $num == 1 ? 1 : 0;
+
             $query = $this->con->prepare("INSERT INTO thumbnails(videoId, filePath, selected)
                                         VALUES(:videoId, :filePath, :selected)");
             $query->bindParam(":videoId", $videoId);
             $query->bindParam(":filePath", $fullThumbnailPath);
             $query->bindParam(":selected", $selected);
+
+            $selected = $num == 1 ? 1 : 0;
 
             $success = $query->execute();
 
@@ -170,8 +174,8 @@ class VideoProcessor {
                 return false;
             }
         }
+
         return true;
-        // echo "duration: $duration";
     }
 
     private function getVideoDuration($filePath) {
@@ -179,20 +183,11 @@ class VideoProcessor {
     }
 
     private function updateDuration($duration, $videoId) {
-        $hours = floor($duration/3600);
-        $mins = floor(($duration - ($hours * 3600)) / 60);
+        
+        $hours = floor($duration / 3600);
+        $mins = floor(($duration - ($hours*3600)) / 60);
         $secs = floor($duration % 60);
-
-        /*
-        One way to do it is with multi lines
-        if ($hours < 1) {
-            $hours = "";
-        }
-        else {
-            $hours = $hours . ":";
-        }
-        */
-
+        
         $hours = ($hours < 1) ? "" : $hours . ":";
         $mins = ($mins < 10) ? "0" . $mins . ":" : $mins . ":";
         $secs = ($secs < 10) ? "0" . $secs : $secs;
@@ -200,10 +195,17 @@ class VideoProcessor {
         $duration = $hours.$mins.$secs;
 
         $query = $this->con->prepare("UPDATE videos SET duration=:duration WHERE id=:videoId");
-        // Bind duration and videoId placeholders to the right values stored in this variables
         $query->bindParam(":duration", $duration);
         $query->bindParam(":videoId", $videoId);
         $query->execute();
     }
 }
 ?>
+
+
+
+
+
+
+
+
