@@ -61,14 +61,45 @@ class Video {
 
     public function incrementViews() {
         $videoId = $this->getId();
-        
         $query = $this->con->prepare("UPDATE videos SET views=views+1 WHERE id=:id");
         $query->bindParam(":id", $videoId);
 
-        
+       
         $query->execute();
 
         $this->sqlData["views"] = $this->sqlData["views"] + 1;
+    }
+
+    public function getLikes() {
+        $videoId = $this->getId();
+
+        $query = $this->con->prepare("SELECT count(*) as 'count' FROM likes WHERE videoId = :videoId");
+        $query->bindParam(":videoId", $videoId);
+
+        $query->execute();
+
+        $data = $query->fetch(PDO::FETCH_ASSOC);
+        return $data["count"];
+
+        
+    }
+
+    public function getDislikes() {
+        $videoId = $this->getId();
+
+        $query = $this->con->prepare("SELECT count(*) as 'count' FROM dislikes WHERE videoId = :videoId");
+        $query->bindParam(":videoId", $videoId);
+
+        $query->execute();
+
+        $data = $query->fetch(PDO::FETCH_ASSOC);
+        return $data["count"];
+
+        
+    }
+
+    public function like() {
+        return "ironman";
     }
 
 }
