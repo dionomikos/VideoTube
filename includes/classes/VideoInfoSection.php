@@ -1,6 +1,5 @@
 <?php
-require_once("includes/classes/VideoInfoControls.php");
-
+require_once("includes/classes/VideoInfoControls.php"); 
 class VideoInfoSection {
 
     private $con, $video, $userLoggedInObj;
