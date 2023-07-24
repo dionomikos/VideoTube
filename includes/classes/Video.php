@@ -60,19 +60,18 @@ class Video {
     }
 
     public function incrementViews() {
-        $videoId = $this->getId();
         $query = $this->con->prepare("UPDATE videos SET views=views+1 WHERE id=:id");
+        $videoId = $this->getId();
         $query->bindParam(":id", $videoId);
 
-        
         $query->execute();
 
         $this->sqlData["views"] = $this->sqlData["views"] + 1;
     }
 
     public function getLikes() {
-        $videoId = $this->getId();
         $query = $this->con->prepare("SELECT count(*) as 'count' FROM likes WHERE videoId = :videoId");
+        $videoId = $this->getId();
         $query->bindParam(":videoId", $videoId);
         
         $query->execute();
@@ -82,8 +81,8 @@ class Video {
     }
 
     public function getDislikes() {
-        $videoId = $this->getId();
         $query = $this->con->prepare("SELECT count(*) as 'count' FROM dislikes WHERE videoId = :videoId");
+        $videoId = $this->getId();
         $query->bindParam(":videoId", $videoId);
         
         $query->execute();
