@@ -41,7 +41,8 @@ class VideoInfoSection {
             $actionButton = ButtonProvider::createEditVideoButton($this->video->getId());
         }
         else {
-            $actionButton = "";
+            $userToObject = new User($this->con, $uploadedBy);
+            $actionButton = ButtonProvider::createSubscriberButton($this->con, $userToObject, $this->userLoggedInObj);
         }
 
         return "<div class='secondaryInfo'>
@@ -60,6 +61,10 @@ class VideoInfoSection {
 
                         </div>
                         $actionButton
+                    </div>
+
+                    <div class='descriptionContainer'>
+                        $description
                     </div>
 
                 </div>";
