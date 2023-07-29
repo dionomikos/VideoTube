@@ -65,6 +65,7 @@ class Video {
         $videoId = $this->getId();
         $query->bindParam(":id", $videoId);
 
+        
         $query->execute();
 
         $this->sqlData["views"] = $this->sqlData["views"] + 1;
@@ -167,10 +168,10 @@ class Video {
     }
 
     public function wasLikedBy() {
+        $query = $this->con->prepare("SELECT * FROM likes WHERE username=:username AND videoId=:videoId");
         $id = $this->getId();
 
         $username = $this->userLoggedInObj->getUsername();
-        $query = $this->con->prepare("SELECT * FROM likes WHERE username=:username AND videoId=:videoId");
         $query->bindParam(":username", $username);
         $query->bindParam(":videoId", $id);
 
@@ -181,14 +182,13 @@ class Video {
     }
 
     public function wasDislikedBy() {
+        $query = $this->con->prepare("SELECT * FROM dislikes WHERE username=:username AND videoId=:videoId");
         $id = $this->getId();
 
         $username = $this->userLoggedInObj->getUsername();
-        $query = $this->con->prepare("SELECT * FROM dislikes WHERE username=:username AND videoId=:videoId");
         $query->bindParam(":username", $username);
         $query->bindParam(":videoId", $id);
 
-        
         $query->execute();
 
         return $query->rowCount() > 0;

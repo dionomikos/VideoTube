@@ -50,6 +50,7 @@ class User {
         $query->bindParam(":userTo", $userTo);
         $username = $this->getUsername();
         $query->bindParam(":userFrom", $username);
+        
         $query->execute();
         return $query->rowCount() > 0;
     }

@@ -40,16 +40,17 @@ class ButtonProvider {
                     <img src='$profilePic' class='profilePicture'>
                 </a>";
     }
-
+    
     public static function createEditVideoButton($videoId) {
         $href = "editVideo.php?videoId=$videoId";
 
         $button = ButtonProvider::createHyperlinkButton("EDIT VIDEO", null, $href, "edit button");
+
         return "<div class='editVideoButtonContainer'>
                     $button
                 </div>";
     }
-
+    
     public static function createSubscriberButton($con, $userToObj, $userLoggedInObj) {
         $userTo = $userToObj->getUsername();
         $userLoggedIn = $userLoggedInObj->getUsername();
@@ -59,7 +60,7 @@ class ButtonProvider {
         $buttonText .= " " . $userToObj->getSubscriberCount();
 
         $buttonClass = $isSubscribedTo ? "unsubscribe button" : "subscribe button";
-        $action = "subscribe(\"userTo\", \"$userLoggedIn\", this)";
+        $action = "subscribe(\"$userTo\", \"$userLoggedIn\", this)";
 
         $button = ButtonProvider::createButton($buttonText, null, $action, $buttonClass);
 
