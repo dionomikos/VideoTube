@@ -6,7 +6,15 @@ function subscribe(userTo, userFrom, button) {
     }
 
     $.post("ajax/subscribe.php", { userTo: userTo, userFrom: userFrom })
-    .done(function(data) {
-        console.log(data);
+    .done(function(count) {
+        if(count != null) {
+            $(button).toggleClass("subscribe unsubscribe");
+
+            var buttonText = $(button).hasClass("subscribe") ? "SUBSCRIBE" : "SUBSCRIBED";
+            $(button).text(buttonText + " " + count);
+        }
+        else{
+            alert("Something went wrong!");
+        }
     });
 }
