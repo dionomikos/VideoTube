@@ -71,9 +71,8 @@ class Comment {
 
     public function getNumberOfReplies() {
         $query = $this->con->prepare("SELECT count(*) FROM comments WHERE responseTo=:responseTo");
-        $id = $this->sqlData["id"];
         $query->bindParam(":responseTo", $id);
-        
+        $id = $this->sqlData["id"];
         $query->execute();
 
         return $query->fetchColumn();
@@ -81,11 +80,11 @@ class Comment {
 
     function time_elapsed_string($datetime, $full = false) {
         $now = new DateTime;
-        $then = new DateTime( $datetime );
-        $diff = (array) $now->diff( $then );
+        $ago = new DateTime($datetime);
+        $diff = $now->diff($ago);
     
-        $diff['w']  = floor( $diff['d'] / 7 );
-        $diff['d'] -= $diff['w'] * 7;
+        $diff->w = floor($diff->d / 7);
+        $diff->d -= $diff->w * 7;
     
         $string = array(
             'y' => 'year',
@@ -96,21 +95,16 @@ class Comment {
             'i' => 'minute',
             's' => 'second',
         );
-    
-        foreach( $string as $k => & $v )
-        {
-            if ( $diff[$k] )
-            {
-                $v = $diff[$k] . ' ' . $v .( $diff[$k] > 1 ? 's' : '' );
-            }
-            else
-            {
-                unset( $string[$k] );
+        foreach ($string as $k => &$v) {
+            if ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
             }
         }
     
-        if ( ! $full ) $string = array_slice( $string, 0, 1 );
-        return $string ? implode( ', ', $string ) . ' ago' : 'just now';
+        if (!$full) $string = array_slice($string, 0, 1);
+        return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 
     public function getId() {
@@ -123,13 +117,12 @@ class Comment {
 
     public function wasLikedBy() {
         $query = $this->con->prepare("SELECT * FROM likes WHERE username=:username AND commentId=:commentId");
-        $id = $this->getId();
-
-        $username = $this->userLoggedInObj->getUsername();
         $query->bindParam(":username", $username);
         $query->bindParam(":commentId", $id);
 
-        
+        $id = $this->getId();
+
+        $username = $this->userLoggedInObj->getUsername();
         $query->execute();
 
         return $query->rowCount() > 0;
@@ -137,13 +130,12 @@ class Comment {
 
     public function wasDislikedBy() {
         $query = $this->con->prepare("SELECT * FROM dislikes WHERE username=:username AND commentId=:commentId");
-        $id = $this->getId();
-
-        $username = $this->userLoggedInObj->getUsername();
         $query->bindParam(":username", $username);
         $query->bindParam(":commentId", $id);
 
-        
+        $id = $this->getId();
+
+        $username = $this->userLoggedInObj->getUsername();
         $query->execute();
 
         return $query->rowCount() > 0;
@@ -151,8 +143,8 @@ class Comment {
 
     public function getLikes() {
         $query = $this->con->prepare("SELECT count(*) as 'count' FROM likes WHERE commentId=:commentId");
-        $commentId = $this->getId();
         $query->bindParam(":commentId", $commentId);
+        $commentId = $this->getId();
         $query->execute();
 
         $data = $query->fetch(PDO::FETCH_ASSOC);
@@ -224,6 +216,24 @@ class Comment {
 
             return -1 - $count;
         }
+    }
+
+    public function getReplies() {
+        $query = $this->con->prepare("SELECT * FROM comments WHERE responseTo=:commentId ORDER BY datePosted ASC");
+        $query->bindParam(":commentId", $id);
+
+        $id = $this->getId();
+
+        $query->execute();
+
+        $comments = "";
+        $videoId = $this->getVideoId();
+        while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            $comment = new Comment($this->con, $row, $this->userLoggedInObj, $videoId);
+            $comments .= $comment->create();
+        }
+
+        return $comments;
     }
 
 }

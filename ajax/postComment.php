@@ -3,10 +3,8 @@ require_once("../includes/config.php");
 require_once("../includes/classes/User.php");
 require_once("../includes/classes/Comment.php");
 
-// We omit the check for the replyTo parameter because this will be always failing
 if(isset($_POST['commentText']) && isset($_POST['postedBy']) && isset($_POST['videoId'])) {
     
-    // This must be transfered here because it is a query that ruins our lastInsertedId indexing
     $userLoggedInObj = new User($con, $_SESSION["userLoggedIn"]);
 
     $query = $con->prepare("INSERT INTO comments(postedBy, videoId, responseTo, body)

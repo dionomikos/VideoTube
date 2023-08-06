@@ -52,6 +52,11 @@ class Video {
         return date("M j, Y", strtotime($date));
     }
 
+    public function getTimeStamp() {
+        $date = $this->sqlData["uploadDate"];
+        return date("M jS, Y", strtotime($date));
+    }
+
     public function getViews() {
         return $this->sqlData["views"];
     }
@@ -75,7 +80,6 @@ class Video {
         $query = $this->con->prepare("SELECT count(*) as 'count' FROM likes WHERE videoId = :videoId");
         $videoId = $this->getId();
         $query->bindParam(":videoId", $videoId);
-        
         $query->execute();
 
         $data = $query->fetch(PDO::FETCH_ASSOC);
@@ -189,18 +193,47 @@ class Video {
         $query->bindParam(":username", $username);
         $query->bindParam(":videoId", $id);
 
+        
         $query->execute();
 
         return $query->rowCount() > 0;
     }
 
     public function getNumberOfComments() {
-        $query = $this->con->prepare("SELECT * FROM comments WHERE videoId =: videoId");
+        $query = $this->con->prepare("SELECT * FROM comments WHERE videoId=:videoId");
         $id = $this->getId();
         $query->bindParam(":videoId", $id);
 
         $query->execute();
+
         return $query->rowCount();
+    }
+
+    public function getComments() {
+        $query = $this->con->prepare("SELECT * FROM comments WHERE videoId=:videoId AND responseTo=0 ORDER BY datePosted DESC");
+        $id = $this->getId();
+        $query->bindParam(":videoId", $id);
+
+        $query->execute();
+
+        $comments = array();
+
+        while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+            $comment = new Comment($this->con, $row, $this->userLoggedInObj, $id);
+            array_push($comments, $comment);
+        }
+
+        return $comments;
+    }
+
+    public function getThumbnail() {
+        $query = $this->con->prepare("SELECT filePath FROM thumbnails WHERE videoId=:videoId AND selected=1");
+        $videoId = $this->getId();
+        $query->bindParam(":videoId", $videoId);
+        
+        $query->execute();
+
+        return $query->fetchColumn();
     }
 
 }
